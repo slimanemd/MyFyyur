@@ -1,0 +1,109 @@
+<!--hhhh-->
+{% extends 'layouts/main.html' %}
+
+<!--  title --->
+{% block title %}Venue Search{% endblock %}
+
+<!-- content -->
+{% block content %}
+
+<button id='btn_update_entity' type="button" class="btn btn-primary">Update</button>
+<button id='btn_delete_entity' type="button" class="btn btn-danger">Delete</button>
+
+
+<hr>
+
+<!--   for  -->
+<div class="row">
+    <div class="col-sm-6">
+        <h1 class="monospace">
+            {{ entity.name }}
+        </h1>
+        <p class="subtitle">
+            ID: {{ entity.id }}
+        </p>
+        <div class="genres">
+            {% for genre in entity.genres %}
+            <span class="genre">{{ genre }}</span> {% endfor %}
+        </div>
+        <p>
+            <i class="fas fa-globe-americas"></i> {{ entity.city }}, {{ entity.state }}
+        </p>
+        <p>
+            <i class="fas fa-map-marker"></i> {% if entity.address %}{{ entity.address }}{% else %}No Address{% endif %}
+        </p>
+        <p>
+            <i class="fas fa-phone-alt"></i> {% if entity.phone %}{{ entity.phone }}{% else %}No Phone{% endif %}
+        </p>
+        <p>
+            <i class="fas fa-link"></i> {% if entity.website %}<a href="{{ entity.website }}" target="_blank">{{ entity.website }}</a>{% else %}No Website{% endif %}
+        </p>
+        <p>
+            <i class="fab fa-facebook-f"></i> {% if entity.facebook_link %}<a href="{{ entity.facebook_link }}" target="_blank">{{ entity.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
+        </p>
+        {% if entity.seeking_talent %}
+        <div class="seeking">
+            <p class="lead">Currently seeking talent</p>
+            <div class="description">
+                <i class="fas fa-quote-left"></i> {{ entity.seeking_description }} <i class="fas fa-quote-right"></i>
+            </div>
+        </div>
+        {% else %}
+        <p class="not-seeking">
+            <i class="fas fa-moon"></i> Not currently seeking talent
+        </p>
+        {% endif %}
+    </div>
+    <div class="col-sm-6">
+        <img src="{{ entity.image_link }}" alt="Venue Image" />
+    </div>
+</div>
+<section>
+    <h2 class="monospace">{{ entity.upcoming_shows_count }} Upcoming {% if entity.upcoming_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
+    <div class="row">
+        {%for show in entity.upcoming_shows %}
+        <div class="col-sm-4">
+            <div class="tile tile-show">
+                <img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
+                <h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
+                <h6>{{ show.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+<section>
+    <h2 class="monospace">{{ entity.past_shows_count }} Past {% if entity.past_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
+    <div class="row">
+        {%for show in entity.past_shows %}
+        <div class="col-sm-4">
+            <div class="tile tile-show">
+                <img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
+                <h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
+                <h6>{{ show.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</h6>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+    //update
+    document.getElementById('btn_update_entity').onclick = function() {
+        text = document.getElementsByClassName('subtitle')[0].innerText; //  alert();
+        window.location.href = "/venues/" + text.substring(4, 8) + "/edit";
+    }
+
+    //delete
+    document.getElementById('btn_delete_entity').onclick = function() {
+        text = document.getElementsByClassName('subtitle')[0].innerText; //alert(text);
+        fetch('/venues/' + text.substring(4, 8), {
+                method: 'DELETE'
+            })
+            .then(response => window.location.href = "/venues")
+    }
+</script>
+
+{% endblock %}

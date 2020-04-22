@@ -1,0 +1,91 @@
+#TODO:_000 - Done[ ] 
+# TODO_: connect to a local postgresql database
+
+#TODO:_00A - Done[ ] 
+# TODO_: implement any missing fields, as a database migration using Flask-Migrate
+
+#TODO:_00B - Done[ ] 
+# TODO_: Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
+
+#TODO:_001 - Done[ ] 
+# TODO_: replace with real venues data.
+#       num_shows should be aggregated based on number of upcoming shows per venue.
+
+#TODO:_002 - Done[ ] 
+# TODO_: implement search on artists with partial string search. 
+# Ensure it is case-insensitive.
+# seach for Hop should return "The Musical Hop".
+# search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+
+#TODO:_003 - Done[ ] 
+# shows the venue page with the given venue_id
+# TODO_: replace with real venue data from the venues table, using venue_id
+
+#TODO:_004 - Done[ ] 
+# TODO_: insert form data as a new Venue record in the db, instead
+
+#TODO:_005 - Done[ ] 
+# TODO_: modify data to be the data object returned from db insertion
+# on successful db insert, flash success
+
+#TODO:_006 - Done[ ] 
+# TODO_: on unsuccessful db insert, flash an error instead.
+# e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
+# see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+
+#TODO:_007 - Done[ ] 
+  # TODO_: Complete this endpoint for taking a venue_id, and using
+  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
+
+  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
+  # clicking that button delete it from the db then redirect the user to the homepage
+
+#TODO:_008 - Done[ ] 
+   # TODO_: replace with real data returned from querying the database
+
+#TODO:_009 - Done[ ] 
+  # TODO_: implement search on artists with partial string search. Ensure it is case-insensitive.
+  # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
+  # search for "band" should return "The Wild Sax Band".
+
+#TODO:_010 - Done[ ] 
+  # shows the venue page with the given venue_id
+  # TODO_: replace with real venue data from the venues table, using venue_id
+
+#TODO:_011
+  # TODO_: populate form with fields from artist with ID <artist_id>
+
+#TODO:_012 - Done[ ] 
+  # TODO_: take values from the form submitted, and update existing
+  # artist record with ID <artist_id> using the new attributes
+
+#TODO:_013 - Done[ ] 
+  # TODO_: populate form with values from venue with ID <venue_id>
+
+#TODO:_014 - Done[ ] 
+  # TODO_: take values from the form submitted, and update existing
+  # venue record with ID <venue_id> using the new attributes
+
+#TODO:_015 - Done[ ] 
+#TODO:_016 - Done[ ] 
+  # called upon submitting the new artist listing form
+  # TODO_: insert form data as a new Venue record in the db, instead
+  # TODO_: modify data to be the data object returned from db insertion
+
+#TODO:_017 - Done[ ] 
+  # TODO_: on unsuccessful db insert, flash an error instead.
+  # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+
+#TODO:_018 - Done[ ] 
+  # displays list of shows at /shows
+  # TODO_: replace with real venues data.
+  #       num_shows should be aggregated based on number of upcoming shows per venue.
+
+#TODO:_019 - Done[ ] 
+  # called to create new shows in the db, upon submitting new show listing form
+  # TODO_: insert form data as a new Show record in the db, instead
+
+#TODO:_020 - Done[ ] 
+  # TODO_: on unsuccessful db insert, flash an error instead.
+  # e.g., flash('An error occurred. Show could not be listed.')
+  # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
