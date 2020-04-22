@@ -1,5 +1,13 @@
 from datetime import *
 
+
+entities_infos = {
+  'venue' : {'entities':'venues' ,'entity':'venue' , 'Entity':'Venue' , 'Entities':'Venues' },
+  'artist': {'entities':'artists','entity':'artist', 'Entity':'Artist', 'Entities':'Artists'},
+  'show'  : {'entities':'shows'  ,'entity':'show'  , 'Entity':'Show'  , 'Entities':'Shows'  }
+  }
+
+
 entity_fields ={
   'venue': ["id","name","genres","city","state", "phone","facebook_link","address","image_link","website","seeking_talent","seeking_description"],
   'artist':["id","name","genres","city","state", "phone","facebook_link","image_link","website","seeking_talent","seeking_description"],
@@ -8,7 +16,6 @@ entity_fields ={
 
 venue_fields = ["id","name","genres","address","city","state", "phone","facebook_link"]  #website
 artist_fields = ["id","name","genres","address","city","state", "phone","facebook_link"]  #website
-
 
 #------------------------------------
 edit_venue_data={

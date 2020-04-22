@@ -1,0 +1,193 @@
+<!--======================================================================================-->
+<!-- Macros -->
+<!--======================================================================================-->
+<!-- Form search -->
+{% macro frm_search(entity) -%}
+<!-- beginmacro 'venues'-->
+{% if (request.endpoint == entity + 's') or (request.endpoint == 'search_' + entity + 's') or (request.endpoint == 'show_' + entity) %}
+
+<form class="search" method="post" action="/{{entity}}s/search">
+    <table>
+        <tr>
+            <td>
+                <select name='search_field' class="form-control" style='padding:5pt'>
+                <option value="name">Name</option>
+                <option value="city">City</option>
+                <option value="state">State</option>
+            </select>
+            </td>
+            <td>
+                <input class="form-control" type="search" name="search_term" placeholder="Find a {{ entity }}" aria-label="Search">
+            </td>
+        </tr>
+    </table>
+</form>
+{% endif %}
+<!-- endmacro -->
+{%- endmacro %}
+
+
+<!--======================================================================================-->
+<!-- doc_head -->
+{% macro doc_head() -%}
+<!-- beginmacro 'venues'-->
+<meta charset="utf-8">
+<title>{% block title %}{% endblock %}</title>
+
+<!-- meta -->
+<meta name="description" content="">
+<meta name="author" content="">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- /meta -->
+
+<!-- styles -->
+<!-- b_specific main --->
+<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css">
+<!-- e_specific main -->
+
+<link type="text/css" rel="stylesheet" href="/static/css/layout.main.css" />
+<link type="text/css" rel="stylesheet" href="/static/css/main.css" />
+<link type="text/css" rel="stylesheet" href="/static/css/main.responsive.css" />
+<link type="text/css" rel="stylesheet" href="/static/css/main.quickfix.css" />
+<!-- /styles -->
+
+<!-- favicons -->
+<link rel="shortcut icon" href="/static/ico/favicon.png">
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/ico/apple-touch-icon-144-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/ico/apple-touch-icon-114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/ico/apple-touch-icon-72-precomposed.png">
+<link rel="apple-touch-icon-precomposed" href="/static/ico/apple-touch-icon-57-precomposed.png">
+<link rel="shortcut icon" href="/static/ico/favicon.png">
+<!-- /favicons -->
+
+<!-- scripts -->
+<script src="/static/js/libs/modernizr-2.8.2.min.js"></script>
+<!--[if lt IE 9]><script src="/static/js/libs/respond-1.4.2.min.js"></script><![endif]-->
+
+<!-- b_specific main --->
+<script src="https://kit.fontawesome.com/af77674fe5.js"></script>
+<script src="/static/js/libs/moment.min.js"></script>
+<script type="text/javascript" src="/static/js/script.js" defer></script>
+<!-- e_specific main --->
+
+<!-- /scripts -->
+<!-- endmacro -->
+{%- endmacro %}
+
+<!--======================================================================================-->
+<!-- doc_navbar -->
+{% macro doc_navbar() -%}
+<!-- beginmacro 'venues'-->
+<!-- Fixed navbar -->
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+            <a class="navbar-brand" href="/">🔥</a>
+        </div>
+        <div class="collapse navbar-collapse" style="border: 5pt red;">
+            <ul class="nav navbar-nav">
+                <li>
+                    <!--Macro Search -->
+                    {{ frm_search('venue') }}
+                    <!--Macro Search -->
+                    {{ frm_search('artist') }}
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li {% if request.endpoint=='venues' %} class="active" {% endif %}><a href="{{ url_for('venues') }}">Venues</a></li>
+                <li {% if request.endpoint=='artists' %} class="active" {% endif %}><a href="{{ url_for('artists') }}">Artists</a></li>
+                <li {% if request.endpoint=='shows' %} class="active" {% endif %}><a href="{{ url_for('shows') }}">Shows</a></li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+<!-- endmacro -->
+{%- endmacro %}
+
+<!--======================================================================================-->
+<!-- doc_alert_messaget -->
+{% macro doc_alert_messaget() -%}
+<!-- beginmacro 'venues'-->
+{% with messages = get_flashed_messages() %}
+<!--bif-->
+{% if messages %}
+<!-- bfor -->
+{% for message in messages %}
+<div class="alert alert-block alert-info fade in">
+    <a class="close" data-dismiss="alert">&times;</a> {{ message }}
+</div>
+<!--efor-->
+{% endfor %}
+<!--eif -->
+{% endif %}
+<!--ewith-->
+{% endwith %}
+<!-- endmacro -->
+{%- endmacro %}
+
+<!--======================================================================================-->
+<!-- doc_alert_messaget -->
+{% macro doc_footer() -%}
+<!-- beginmacro 'venues'-->
+
+<!-- b_specific main --->
+<div id="footer">
+    <div class="container">
+        <p>Fyyur &copy; All Rights Reserved.</p>
+        {% block footer %}{% endblock %}
+    </div>
+</div>
+<!-- b_specific main --->
+
+<!--======================================================================================-->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/libs/bootstrap-3.1.1.min.js" defer></script>
+<script type="text/javascript" src="/static/js/plugins.js" defer></script>
+<!--======================================================================================-->
+<!-- endmacro -->
+{%- endmacro %}
+<!--======================================================================================-->
+<!--Forms macros -->
+<!-- Form search -->
+{% macro form_heading(title) -%}
+<!-- beginmacro 'venues'-->
+<h3 class="form-heading">{{ title }}
+    <a href="{{ url_for('index') }}" title="Back to homepage">
+        <i class="fa fa-home pull-right"></i>
+    </a>
+</h3>
+<!-- endmacro -->
+{%- endmacro %}
+
+
+<!-- Form search -->
+{% macro form_group_00(p_field_name, p_field_label, p_form_field, p_placeholder, p_message, p_id) -%}
+<!-- beginmacro 'venues'-->
+<label for="{{p_field_name}}">{{p_field_label}}</label>
+<!-- message --->
+{% if(p_message != '')%}
+<!---->
+<small>{{ p_message }}</small>
+<!---->
+{% endif %}
+<!--control -->
+{{ p_form_field(class_ = 'form-control', placeholder= p_placeholder, autofocus = true, id= p_id) }}
+<!-- endmacro -->
+{%- endmacro %}
+
+
+<!-- Form search -->
+{% macro form_group_01(p_field_name, p_field_label, p_form_field, p_placeholder, p_message, p_id) -%}
+<!-- beginmacro 'venues'-->
+<div class="form-group">
+    {{ form_group_00(p_field_name, p_field_label, p_form_field, p_placeholder, p_message, p_id) }}
+</div>
+
+<!-- endmacro -->
+{%- endmacro %}

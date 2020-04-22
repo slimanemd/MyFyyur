@@ -1,0 +1,28 @@
+<!--======================================================================================-->
+<!-- Macros -->
+<!--======================================================================================-->
+{% from "layouts/macros.html" import form_heading with context %}
+<!--======================================================================================-->
+{% extends 'layouts/main.html' %}
+
+<!-- -->
+{% block title %}New {{ data['entity'] }} {% endblock %}
+
+<!-- -->
+{% block content %}
+<!-- form -->
+<div class="form-wrapper">
+    <form method="post" class="form" action="{{ url_for('create_venue_submission') }}">
+        {{ data['form'].hidden_tag() }}
+        <!-- heading --->
+        {{ form_heading('List a new ' + data["entity"]) }}
+
+        <!-- form_bloc -->
+        {% block form_content %}{% endblock %}
+
+        <!-- submit -->
+        <input type="submit" value="Create {{data['entity']}}" class="btn btn-primary btn-lg btn-block">
+        <!-- Artist -->
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+<!--======================================================================================-->
+<!-- Macros -->
+<!--======================================================================================-->
+<!-- Form search -->
+{% macro entity_cadre(p_entity_name, p_entities ) -%}
+<!-- beginmacro 'venues'-->
+<ul class="items">
+    {% for entity in p_entities %}
+    <li>
+        <a href="/{{ p_entity_name }}s/{{ entity.id }}">
+            <i class="fas fa-music"></i>
+            <div class="item">
+                <h5>{{ entity.name }}</h5>
+            </div>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+<!-- endmacro -->
+{%- endmacro %}
+<!--======================================================================================-->
+<!-- Form search -->
+{% macro show_bloc(p_shows) -%}
+<!-- beginmacro 'venues'-->
+<div class="row shows">
+    {%for show in p_shows %}
+    <div class="col-sm-4">
+        <div class="tile tile-show" style="background-color: oldlace; border-color: oldlace; padding:10pt">
+            <div>
+                <div style="float: left;">
+                    <p style="font-size:16px;"><b>{{ show.start_time }}</b>
+                    </p>
+
+                    <!--h4> show.start_time|datetime('full') </h4  |datetime('full') -->
+                </div>
+                <div style="float: right;">
+                    <button id='btnshow{{ show.id }}' type="button" class="btn btn-primary btn-xs">&cross;</button>
+                </div>
+            </div>
+
+            <!--div style="border-left: 6px solid green; width: 100%;"></div-->
+            <hr>
+
+            <div>
+                <img src="{{ show.artist_image_link }}" alt="Artist Image" />
+
+                <h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
+                <p>playing at</p>
+                <h5><a href="/venues/{{ show.venue_id }}">{{ show.venue_name }}</a></h5>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<!-- endmacro -->
+{%- endmacro %}
+<!--======================================================================================-->
+{% extends 'layouts/main.html' %}
+
+<!--  -->
+{% block title %}Fyyur | {{data['entities_infos']['Entities']}}{% endblock %}
+
+<!-- content -->
+{% block content %}
+
+<button id='btn_create_entity' type="button" class="btn btn-primary">New {{data['entities_infos']['Entity']}}</button>
+<hr>
+
+
+<!-- bif -->
+{% if data['entities_infos']['entity'] == 'venue' %}
+<!--   Venue  -->
+<!--   for  -->
+{% for area in data['results'] %}
+<h3>{{ area.city }}, {{ area.state }}</h3>
+{{ entity_cadre('venue', area.venues) }}
+<!-- efor -->
+{% endfor %}
+<!--  eif -->
+{% endif %}
+
+
+<!-- bif -->
+{% if data['entities_infos']['entity'] == 'artist' %}
+<!--   Venue  -->
+{{ entity_cadre('artist', data['results']) }}
+<!--  eif -->
+{% endif %}
+
+
+<!-- bif -->
+{% if data['entities_infos']['entity'] == 'show' %}
+<!--   Venue  -->
+{{ show_bloc(data['results']) }}
+<!--  eif -->
+{% endif %}
+
+
+
+<!-- script -->
+<script>
+    document.getElementById('btn_create_entity').onclick = function() {
+        window.location.href = "/{{data['entities_infos']['entities']}}/create";
+    }
+</script>
+
+<!-- bif -->
+{% if data['entities_infos']['entity'] == 'show' %}
+
+<script>
+    //
+    dd = document.querySelectorAll('*[id^="btnshow"]');
+    console.log(typeof(dd));
+    dd.forEach(function(btn) {
+        btn.onclick = function() {
+            let id = btn.getAttribute('id').substring(7, 15)
+            window.location.href = "/{{data['entities_infos']['entities']}}/" + id + "/delete";
+        }
+    })
+</script>
+<!--eif -->
+{% endif %}
+
+<!-- --->
+{% endblock %}

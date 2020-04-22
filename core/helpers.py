@@ -1,15 +1,17 @@
 #----------------------------------------------------------------------------#
-# Imports
+# Helpers
 #----------------------------------------------------------------------------#
+#imports
 import dateutil.parser
 import babel
-from app import db, Venue, Artist, Show
+from app import db
+from core.models import Venue, Artist, Show
 
-from flask import render_template, request, flash, redirect, url_for #Flask, , Response, 
-from data import entity_fields, venues00, artists00, shows00
-from datetime import datetime
 from config import NB_LIMIT
 
+from flask import render_template, request, flash, redirect, url_for #Flask, , Response, 
+from data.data import entity_fields, venues00, artists00, shows00
+from datetime import datetime
 from functools import partial
 
 #----------------------------------------------------------------------------#
@@ -25,6 +27,9 @@ get_artist_shows = lambda p_artist_id :Show.query.filter(Show.artist_id == p_art
 get_nb_shows_st = lambda p_artist_id, p_start_time : len(
   list(filter(partial(compare_show_st,p_start_time), get_artist_shows(p_artist_id))))
   
+#Top N recentlty listed
+topN = lambda Entity: Entity.query.order_by('id desc').limit(NB_LIMIT).all()
+
 #format_datetime
 def format_datetime(value, format='medium'):
   date = dateutil.parser.parse(value)
@@ -57,11 +62,45 @@ def hlp_format_entity_01(entity):
     'num_upcoming_shows': hlp_get_num_upcoming_show(entity.shows) 
     }
 
+#--------------------------------------------------------------------------#
+#artists helper
+def get_entities_format_01(p_entity):
+  if p_entity == 'artist': return get_artists_format_01()
+  if p_entity == 'venue' : return get_venues_format_01()
+  if p_entity == 'show'  : return get_shows_format_01()
+
+#get_shows_format_01 helper get shows infos
+def get_shows_format_01():
+  shows =  Show.query.all()   #print(shows)
+  myshows = []
+  for show in shows:
+    venue  =  Venue.query.get(show.venue_id)
+    artist =  Artist.query.get(show.artist_id)
+    show_infos = {
+      "id"               : show.id,
+      "venue_id"         : show.venue_id,
+      "venue_name"       : venue.name,
+      "artist_id"        : show.artist_id,
+      "artist_name"      : artist.name,
+      "artist_image_link": artist.image_link,
+      "start_time"       : str(show.start_time)
+    }
+    myshows.append(show_infos)
+  return myshows
+
+#get_artists_format_01 artists helper
+def get_artists_format_01():
+  entity_list = Artist.query.all()
+  return [ { 
+          "id":entity.id,
+          "name":entity.name
+        } for entity in entity_list ]
+
 #helper get_venues_format_01
 def get_venues_format_01():
-  venues = Venue.query.all()
+  entity_list = Venue.query.all()
   rsl = {}
-  for venue in venues:
+  for venue in entity_list:
     keys  = rsl.keys()
     key   = hlp_make_key_01(venue.city, venue.state)
     if not key in keys:
@@ -79,27 +118,14 @@ def hlp_do_search(Entity,fields, search_term):
   return entities
 
 #--------------------------------------------------------------------------#
-#artists helper
-def get_artists_format_01():
-  entity_list = Artist.query.all()
-  return [ { 
-          "id":entity.id,
-          "name":entity.name
-        } for entity in entity_list ]
-
-#--------------------------------------------------------------------------#
 # Helpers
 #--------------------------------------------------------------------------#
-#Top N recentlty listed
-topN = lambda Entity: Entity.query.order_by('id desc').limit(NB_LIMIT).all()
-
 #fill_entity_from_form: 
 def fill_entity_from_form(entity, entity_id, entity_name):  
   if entity_name == 'show':
     entity.artist_id  = int(request.form['artist_id'])
     entity.venue_id   = int(request.form['venue_id'])
     entity.start_time = datetime.strptime(request.form['start_time'], '%Y-%m-%d %H:%M:%S')
-
     entity_data       =   None if entity_id == None else  {'id':entity_id}
   else:
     keys  =  list(request.form.keys())
@@ -109,37 +135,22 @@ def fill_entity_from_form(entity, entity_id, entity_name):
 
     entity_data =  None if entity_id == None else  {'id':entity_id, 'name':entity.name}
   
-  #return entity, entity_data
+  #
   return entity_data
 
 #fill_form_from_entity
 def fill_form_from_entity(EntityForm, Entity, entity_id, entity_name):
-  entity_form = EntityForm()
-  entity = Entity.query.get(entity_id)
-  if entity:
-    for attribute in entity_fields[entity_name]:
-      if attribute != 'id' and hasattr(entity_form, attribute):
-        entity_form[attribute].data = getattr(entity, attribute)
-  return entity_form, {'id':entity.id, 'name': entity.name}
-
-#helper get shows infos
-def get_shows_infos():
-  shows =  Show.query.all()   #print(shows)
-  myshows = []
-  for show in shows:
-    venue  =  Venue.query.get(show.venue_id)
-    artist =  Artist.query.get(show.artist_id)
-    show_infos = {
-      "id"               : show.id,
-      "venue_id"         : show.venue_id,
-      "venue_name"       : venue.name,
-      "artist_id"        : show.artist_id,
-      "artist_name"      : artist.name,
-      "artist_image_link": artist.image_link,
-      "start_time"       : str(show.start_time)
-    }
-    myshows.append(show_infos)
-  return myshows
+  entity_form = EntityForm(); data = {'entity_name':entity_name }
+  if entity_id != None:
+    entity = Entity.query.get(entity_id)
+    if entity:
+      for attribute in entity_fields[entity_name]:
+        if attribute != 'id' and hasattr(entity_form, attribute):
+          entity_form[attribute].data = getattr(entity, attribute)
+    data = {'id':entity.id, 'name': entity.name, 'entity_name':entity_name}
+  
+  #
+  return entity_form, data
 
 #hlp_get_show_entity : show specific entity based on its id
 def hlp_get_show_entity(Entity, entity_name, entity_id):
@@ -175,40 +186,39 @@ def hlp_get_show_entity(Entity, entity_name, entity_id):
 #--------------------------------------------------------------------------#
 # Controller delegautes
 #--------------------------------------------------------------------------#
-# do_search_entity : search entity using serach terms 
-# Challenge: search by city and state  DONE 
+#venues
+def show_entities(p_entity_infos):
+  return render_template('pages/entities.html', data = p_entity_infos );
+
+# do_search_entity : search entity using serach terms Challenge: search by city and state  DONE 
 def do_search_entity(Entity, entities_name): 
   field = request.form.get('search_field', '')
   results = hlp_do_search(Entity, [field], request.form.get('search_term', ''))
-  response = {
-    'count' : len(results),
-    'data'  : list(map(hlp_format_entity_01, results))
-  }
+  search_infos = {
+    'results' : {
+      'count' : len(results),
+      'data'  : list(map(hlp_format_entity_01, results))
+    }, 
+    'search_term': request.form.get('search_term', '')
+  } 
 
-  return render_template('pages/search_' + entities_name + '.html',   #venues
-          results     = response,   
-          search_term = request.form.get('search_term', ''))
+  return render_template('pages/search_entities.html', data = search_infos )
 
 #show_entity : show specific entity based on its id
-def show_entity(Entity, entity_name, entity_id):
-  entity_data = hlp_get_show_entity(Entity, entity_name, entity_id)  # Entity.query.get(entity_id)
+def show_entity(Entity, entity_name, entity_id, entities_name):
+  entity_data = hlp_get_show_entity(Entity, entity_name, entity_id)
   if entity_data == None : return redirect(url_for('index'))
-  return render_template('pages/show_' + entity_name + '.html', entity=entity_data)
+  return render_template('pages/show_entity.html', data={'entity': entity_data, 'entities_name':entities_name})
 
-# edit_entity : TODO DONE: populate form with values from venue with ID <venue_id>
-def edit_entity(EntityForm, Entity, entity_name, entity_id):
-  #
+#create_or_edit_entity
+def create_or_edit_entity(EntityForm, Entity, entity_name, entity_id):
   entity_form, entity_data = fill_form_from_entity(EntityForm, Entity, entity_id, entity_name)  #(005)
-  return render_template('forms/edit_' + entity_name + '.html', 
-                          form = entity_form, 
-                          data = entity_data)
+  return render_template('forms/form_entity.html', data = {'form':entity_form, 'entity':entity_name})
 
-# Challenge: artist avaibility  DONE 
-#combine the create  + update (edit)
+# create_or_edit_entity_submission
 def create_or_edit_entity_submission(EntityForm, Entity, entity_name, entities_name,  entity_id):
   operation = 'create' if entity_id == None else 'update'  #
-  entity_form = EntityForm() 
-  data_entity = None
+  entity_form = EntityForm();   data_entity = None
   if entity_form.validate_on_submit():
 
     #if show to create then check the avaibility of the artist before create it
@@ -216,7 +226,7 @@ def create_or_edit_entity_submission(EntityForm, Entity, entity_name, entities_n
       start_time0 = datetime.strptime(request.form['start_time'],'%Y-%m-%d %H:%M:%S')
       if get_nb_shows_st(request.form['artist_id'],start_time0 ) > 0:
         flash('The artist is not available at this time ' + request.form['start_time'] + '!')
-        return render_template('forms/new_show.html', form = entity_form,data = None)
+        return render_template('forms/form_entity.html',  data = {'form':entity_form, 'data':None})
 
     #instanciated the entity fill its fields with values if the editing
     entity = Entity() if entity_id == None else Entity.query.get(entity_id)   
@@ -238,10 +248,7 @@ def create_or_edit_entity_submission(EntityForm, Entity, entity_name, entities_n
     flash(entity_name + ' validation error when ' + operation + ' this item, errors: ' + str(entity_form.errors))    
 
   #
-  return render_template(
-      'forms/' + ('new' if entity_id == None else 'edit') + '_' + entity_name + '.html', 
-      form = entity_form,
-      data = data_entity)
+  return render_template('forms/form_entity.html',  data = {'form':entity_form, 'data':data_entity})
 
 #delete_entity : delete current entity by its id
 def delete_entity(Entity, entity_name,  entity_id):
@@ -255,45 +262,4 @@ def delete_entity(Entity, entity_name,  entity_id):
     flash(entity_name  + ' Delete non ok')
   finally:
     db.session.close()
-
-#--------------------------------------------------------------------------#
-# Helpers DB populate
-#--------------------------------------------------------------------------#
-#populate db one entity
-def populate_db_entity(Entity, entity_name, dt_entities):
-  entities = []
-  for dt_entity in dt_entities:
-    entity = Entity()
-    for attribute in entity_fields[entity_name]:
-      if attribute != 'id' and attribute in dt_entity.keys():
-        setattr(entity, attribute , dt_entity[attribute])
-    entities.append(entity)
-
-  return entities
-
-#populate db all entities
-def populate_db():
-  #
-  Entity = Venue
-  entity_name = 'venue'
-  dt_entities = venues00
-  venues = populate_db_entity(Entity, entity_name, dt_entities)
-
-  #
-  Entity = Artist
-  entity_name = 'artist'
-  dt_entities = artists00
-  artists = populate_db_entity(Entity, entity_name, dt_entities)
-
-  #
-  Entity = Show
-  entity_name = 'show'
-  dt_entities = shows00
-  shows = populate_db_entity(Entity, entity_name, dt_entities)
-
-  #
-  db.session.add_all(venues)
-  db.session.add_all(artists)
-  db.session.add_all(shows)
-  db.session.commit()
-#--------------------------------------------------------------------------#
+  return None

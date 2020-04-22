@@ -9,43 +9,41 @@
 
 <button id='btn_update_entity' type="button" class="btn btn-primary">Update</button>
 <button id='btn_delete_entity' type="button" class="btn btn-danger">Delete</button>
-
-
 <hr>
 
 <!--   for  -->
 <div class="row">
     <div class="col-sm-6">
         <h1 class="monospace">
-            {{ entity.name }}
+            {{ data['entity'].name }}
         </h1>
         <p class="subtitle">
-            ID: {{ entity.id }}
+            ID: {{ data['entity'].id }}
         </p>
         <div class="genres">
-            {% for genre in entity.genres %}
+            {% for genre in data['entity'].genres %}
             <span class="genre">{{ genre }}</span> {% endfor %}
         </div>
         <p>
-            <i class="fas fa-globe-americas"></i> {{ entity.city }}, {{ entity.state }}
+            <i class="fas fa-globe-americas"></i> {{ data['entity'].city }}, {{ data['entity'].state }}
         </p>
         <p>
-            <i class="fas fa-map-marker"></i> {% if entity.address %}{{ entity.address }}{% else %}No Address{% endif %}
+            <i class="fas fa-map-marker"></i> {% if data['entity'].address %}{{ data['entity'].address }}{% else %}No Address{% endif %}
         </p>
         <p>
-            <i class="fas fa-phone-alt"></i> {% if entity.phone %}{{ entity.phone }}{% else %}No Phone{% endif %}
+            <i class="fas fa-phone-alt"></i> {% if data['entity'].phone %}{{ data['entity'].phone }}{% else %}No Phone{% endif %}
         </p>
         <p>
-            <i class="fas fa-link"></i> {% if entity.website %}<a href="{{ entity.website }}" target="_blank">{{ entity.website }}</a>{% else %}No Website{% endif %}
+            <i class="fas fa-link"></i> {% if data['entity'].website %}<a href="{{ data['entity'].website }}" target="_blank">{{ data['entity'].website }}</a>{% else %}No Website{% endif %}
         </p>
         <p>
-            <i class="fab fa-facebook-f"></i> {% if entity.facebook_link %}<a href="{{ entity.facebook_link }}" target="_blank">{{ entity.facebook_link }}</a>{% else %}No Facebook Link{% endif %}
+            <i class="fab fa-facebook-f"></i> {% if data['entity'].facebook_link %}<a href="{{ data['entity'].facebook_link }}" target="_blank">{{ data['entity'].facebook_link }}</a>{% else %}No Facebook Link{% endif %}
         </p>
-        {% if entity.seeking_talent %}
+        {% if data['entity'].seeking_talent %}
         <div class="seeking">
             <p class="lead">Currently seeking talent</p>
             <div class="description">
-                <i class="fas fa-quote-left"></i> {{ entity.seeking_description }} <i class="fas fa-quote-right"></i>
+                <i class="fas fa-quote-left"></i> {{ data['entity'].seeking_description }} <i class="fas fa-quote-right"></i>
             </div>
         </div>
         {% else %}
@@ -55,13 +53,13 @@
         {% endif %}
     </div>
     <div class="col-sm-6">
-        <img src="{{ entity.image_link }}" alt="Venue Image" />
+        <img src="{{ data['entity'].image_link }}" alt="Venue Image" />
     </div>
 </div>
 <section>
-    <h2 class="monospace">{{ entity.upcoming_shows_count }} Upcoming {% if entity.upcoming_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
+    <h2 class="monospace">{{ data['entity'].upcoming_shows_count }} Upcoming {% if data['entity'].upcoming_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
     <div class="row">
-        {%for show in entity.upcoming_shows %}
+        {%for show in data['entity'].upcoming_shows %}
         <div class="col-sm-4">
             <div class="tile tile-show">
                 <img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
@@ -74,9 +72,9 @@
     </div>
 </section>
 <section>
-    <h2 class="monospace">{{ entity.past_shows_count }} Past {% if entity.past_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
+    <h2 class="monospace">{{ data['entity'].past_shows_count }} Past {% if data['entity'].past_shows_count == 1 %}Show{% else %}Shows{% endif %}</h2>
     <div class="row">
-        {%for show in entity.past_shows %}
+        {%for show in data['entity'].past_shows %}
         <div class="col-sm-4">
             <div class="tile tile-show">
                 <img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
@@ -93,16 +91,16 @@
     //update
     document.getElementById('btn_update_entity').onclick = function() {
         text = document.getElementsByClassName('subtitle')[0].innerText; //  alert();
-        window.location.href = "/venues/" + text.substring(4, 8) + "/edit";
+        window.location.href = "/{{ data['entities_name'] }}/" + text.substring(4, 8) + "/edit";
     }
 
     //delete
     document.getElementById('btn_delete_entity').onclick = function() {
         text = document.getElementsByClassName('subtitle')[0].innerText; //alert(text);
-        fetch('/venues/' + text.substring(4, 8), {
+        fetch("/{{ data['entities_name'] }}/" + text.substring(4, 8), {
                 method: 'DELETE'
             })
-            .then(response => window.location.href = "/venues")
+            .then(response => window.location.href = "/{{ data['entities'] }}")
     }
 </script>
 

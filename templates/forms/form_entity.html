@@ -1,0 +1,67 @@
+<!--======================================================================================-->
+<!-- Macros -->
+<!--======================================================================================-->
+{% from "layouts/macros.html" import form_heading, form_group_01 with context %}
+
+<!-- Form search -->
+{% macro form_group_02() -%}
+<!-- beginmacro 'venues'-->
+<div class="form-group">
+    <label>City & State</label>
+    <div class="form-inline">
+        <div class="form-group">
+            {{ data['form'].city(class_ = 'form-control', placeholder='City', autofocus = true) }}
+        </div>
+        <div class="form-group">
+            {{ data['form'].state(class_ = 'form-control', placeholder='State', autofocus = true) }}
+        </div>
+    </div>
+</div>
+<!-- endmacro -->
+{%- endmacro %}
+<!--======================================================================================-->
+{% extends 'layouts/form_shell.html' %}
+
+<!---->
+{% block form_content %}
+
+<!-- bif --->
+{% if data['entity'] != 'show' %}
+
+<!-- venue or artist  --->
+<!-- field Name -->
+{{ form_group_01('name','Name', data['form'].name, '','','') }}
+<!-- field City & State -->
+{{ form_group_02() }}
+
+<!-- bif -->
+{% if data['entity'] == 'venue' %}
+<!-- field Address -->
+{{ form_group_01('address','Address', data['form'].address,'','','') }}
+<!-- eif -->
+{% endif %}
+
+<!-- field Phone -->
+{{ form_group_01('phone','Phone', data['form'].phone, 'xxx-xxx-xxxx','','') }}
+<!-- field Genres -->
+{{ form_group_01('genres','Genres', data['form'].genres,'Genres, separated by commas', 'Ctrl+Click to select multiple', data['form'].state) }}
+<!-- field Facebook -->
+{{ form_group_01('facebook_link','Facebook Link', data['form'].facebook_link, 'http://','', data['form'].state) }}
+
+<!-- eif  --->
+{% endif %}
+
+<!-- show -->
+{% if data['entity'] == 'show' %}
+<!-- show -->
+<!-- field Artist -->
+{{ form_group_01('artist_id','Artist', data['form'].artist_id, 'artist_id','ID can be found on the Artists Page','') }}
+<!-- field Venue -->
+{{ form_group_01('venue_id','Venue', data['form'].venue_id,'venue_id','ID can be found on the Venues Page','') }}
+<!-- field Phone -->
+{{ form_group_01('start_time','Start Time', data['form'].start_time, 'YYYY-MM-DD HH:MM','','') }}
+<!-- show -->
+{% endif %}
+
+<!-- -->
+{% endblock %}

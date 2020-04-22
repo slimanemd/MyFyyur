@@ -1,0 +1,26 @@
+{% extends 'layouts/main.html' %}
+
+<!--  -->
+{% block title %}Fyyur | data['entities'] Search{% endblock %}
+
+<!--  -->
+{% block content %}
+
+<!--  -->
+<h3>Number of search results for "{{ data['search_term'] }}": {{ data['results'].count }}</h3>
+<ul class="items">
+    {% for entity in data['results'].data %}
+    <li>
+        <a href="/{{ data['entities'] }}/{{ entity.id }}">
+            <i class="fas fa-music"></i>
+            <div class="item">
+                <h5>{{ entity.name }}</h5>
+            </div>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+<!--  -->
+
+
+{% endblock %}
